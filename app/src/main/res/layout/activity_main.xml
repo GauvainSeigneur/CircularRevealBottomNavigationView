@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.gauvainseigneur.gauvaindesign.circularrevealbottomnavigationview.MainActivity">
+
+    <FrameLayout
+        android:id="@+id/content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="@dimen/bottom_navigation_height">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="16dp">
+
+
+            <Switch
+                android:id="@+id/oneRevealActivation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="16dp"
+                android:text="One reveal Mode"/>
+
+
+        </LinearLayout>
+
+
+    </FrameLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <View
+                android:id="@+id/navigation_constant_background"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/bottom_navigation_height"/>
+
+            <View
+                android:id="@+id/navigation_reveal_background"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/bottom_navigation_height"/>
+
+            <View
+                android:id="@+id/navigation_reveal_front"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/bottom_navigation_height"/>
+
+        </FrameLayout>
+
+        <android.support.design.widget.BottomNavigationView
+            android:id="@+id/navigation"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/bottom_navigation_height"
+            app:itemIconTint="@drawable/bottom_nav_menu_selector"
+            app:itemTextColor="@drawable/bottom_nav_menu_selector"
+            app:menu="@menu/navigation"/>
+
+    </RelativeLayout>
+
+</android.support.design.widget.CoordinatorLayout>

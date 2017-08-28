@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimaryLight">#00c6ff</color>
+    <color name="colorPrimary">#42a5f5</color>
+    <color name="colorPrimaryDark">#2196f3</color>
+    <color name="colorPrimaryDarker">#0072ff</color>
+    <color name="colorAccent">#9aca40</color>
+    <color name="colorWhite">#FFFFFFFF</color>
+
+    <!-- Bottom Navigation Color colours -->
+    <color name="bottom_nav_item_unchecked_color">#40222222</color>
+    <color name="bottomNavColor_1">#29b6f6</color>
+    <color name="bottomNavColor_2">#19c498</color>
+    <color name="bottomNavColor_3">#FCD13C</color>
+    <color name="bottomNavColor_4">#F77C53</color>
+    <color name="bottomNavColor_5">#95A2B4</color>
+
+    <color name="md_grey_50">#FAFAFA</color>
+
+</resources>

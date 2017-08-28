@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">CircularRevealBottomNavigation</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
+
+    <array name="reveal_bottom_nav_bg">
+        <item>@color/colorPrimary</item>
+        <item>@color/bottomNavColor_2</item>
+        <item>@color/bottomNavColor_3</item>
+        <item>@color/bottomNavColor_4</item>
+        <item>@color/bottomNavColor_5</item>
+    </array>
+
+</resources>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        is-multidex="true"
+        jar="/Users/gauvain/AndroidStudioProjects/CircularRevealBottomNavigationView/app/build/intermediates/incremental-runtime-classes/debug/instant-run.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="26.0.0"
+        sha1="caff8e51a24901cfc9cd7e1cf83d84f4cb0c103b">
+        <dex dex="/Users/gauvain/AndroidStudioProjects/CircularRevealBottomNavigationView/app/build/intermediates/transforms/dex/debug/folders/1000/10000/instant-run_5e82fb5ab9a7959c2992fddd01d881a295c77d0a/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/gauvain/AndroidStudioProjects/CircularRevealBottomNavigationView/app/build/intermediates/incremental-classes/debug/instant-run-bootstrap.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="26.0.0"
+        sha1="bfe5d045341d2a2dd63db0f345967247d616978c">
+        <dex dex="/Users/gauvain/AndroidStudioProjects/CircularRevealBottomNavigationView/app/build/intermediates/transforms/dex/debug/folders/1000/10000/instant-run-bootstrap_4f91c0d6abb7b0857b7774c6bf1f29e36a64cb6b/classes.dex" />
+    </item>
+
+</items>
