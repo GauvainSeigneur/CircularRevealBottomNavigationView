@@ -36,12 +36,10 @@ public class MainActivity extends AppCompatActivity {
     private int previousItemSelected;
     private int revealItemPosition;
     private int revealFinalPosition;
-    private TextView mTextMessage;
     //choose type of colorRevealMode
     private int ONE_COLOR_REVEAL_MODE=0;
     private int MULTIPLE_COLOR_REVEAL_MODE=1;
     public boolean isMultipleColorRevealMode;
-    private int constantColor = R.color.colorPrimary;
     //todo :Just for the demo -- to be deleted
     Switch oneRevealActivator;
 
@@ -52,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         context=this;
         initViews();
-        initBottomNavigationview(false,true,MULTIPLE_COLOR_REVEAL_MODE,constantColor);
+        initBottomNavigationview(false,true,MULTIPLE_COLOR_REVEAL_MODE,R.color.bottomNavColor_1);
         //
         mBottomNavigationView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
        //todo :Just for the demo -- to be deleted
@@ -61,11 +59,11 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if(isChecked) {
-                    initBottomNavigationview(false,true,ONE_COLOR_REVEAL_MODE,constantColor);
+                    initBottomNavigationview(false,true,ONE_COLOR_REVEAL_MODE,R.color.colorPrimary);
                     Log.d("You are :", "Checked");
                 }
                 else {
-                    initBottomNavigationview(false,true,MULTIPLE_COLOR_REVEAL_MODE,constantColor);
+                    initBottomNavigationview(false,true,MULTIPLE_COLOR_REVEAL_MODE,R.color.bottomNavColor_1);
                     Log.d("You are :", " Not Checked");
                 }
             }
@@ -222,8 +220,8 @@ public class MainActivity extends AppCompatActivity {
                 revealBackground.setBackgroundColor(colorNumberarray[pos]);
             }
         });
-        //duration : double of icon animation duration
-        animator.setDuration(ACTIVE_ANIMATION_DURATION_MS * 2);
+        //duration : triple of icon animation duration
+        animator.setDuration(ACTIVE_ANIMATION_DURATION_MS * 3);
         animator.setInterpolator(new FastOutSlowInInterpolator());
         animator.start();
 
@@ -236,7 +234,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onAnimationStart(Animator animation) {
                 revealFront.setBackgroundColor(ContextCompat.getColor(MainActivity.this,
-                        constantColor));
+                        R.color.colorPrimary));
             }
 
             @Override
@@ -245,7 +243,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        animatorRevealFront.setDuration(ACTIVE_ANIMATION_DURATION_MS * 3);
+        animatorRevealFront.setDuration(ACTIVE_ANIMATION_DURATION_MS * 4);
         animatorRevealFront.setInterpolator(new FastOutSlowInInterpolator());
         animatorRevealFront.start();
 
@@ -263,7 +261,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        animatorRevealbackground.setDuration(ACTIVE_ANIMATION_DURATION_MS * 2);
+        animatorRevealbackground.setDuration(ACTIVE_ANIMATION_DURATION_MS * 3);
         animatorRevealbackground.setInterpolator(new FastOutSlowInInterpolator());
         animatorRevealbackground.start();
     }
