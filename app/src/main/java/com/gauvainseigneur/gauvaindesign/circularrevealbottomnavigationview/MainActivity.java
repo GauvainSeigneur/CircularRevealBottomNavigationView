@@ -9,6 +9,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
@@ -41,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
     private int MULTIPLE_COLOR_REVEAL_MODE=1;
     public boolean isMultipleColorRevealMode;
     private int constantColor = R.color.colorPrimary;
-    //Just for the demo
+    //todo :Just for the demo -- to be deleted
     Switch oneRevealActivator;
 
 
@@ -54,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
         initBottomNavigationview(false,true,MULTIPLE_COLOR_REVEAL_MODE,constantColor);
         //
         mBottomNavigationView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-       //Just for the demo -- to be deleted
+       //todo :Just for the demo -- to be deleted
         oneRevealActivator= (Switch) findViewById(R.id.oneRevealActivation);
         oneRevealActivator.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -221,9 +222,9 @@ public class MainActivity extends AppCompatActivity {
                 revealBackground.setBackgroundColor(colorNumberarray[pos]);
             }
         });
-
-        animator.setStartDelay(0);
+        //duration : double of icon animation duration
         animator.setDuration(ACTIVE_ANIMATION_DURATION_MS * 2);
+        animator.setInterpolator(new FastOutSlowInInterpolator());
         animator.start();
 
     }
@@ -244,8 +245,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        animatorRevealFront.setStartDelay(0);
         animatorRevealFront.setDuration(ACTIVE_ANIMATION_DURATION_MS * 3);
+        animatorRevealFront.setInterpolator(new FastOutSlowInInterpolator());
         animatorRevealFront.start();
 
 
@@ -262,8 +263,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        animatorRevealbackground.setStartDelay(0);
         animatorRevealbackground.setDuration(ACTIVE_ANIMATION_DURATION_MS * 2);
+        animatorRevealbackground.setInterpolator(new FastOutSlowInInterpolator());
         animatorRevealbackground.start();
     }
 
@@ -292,15 +293,15 @@ public class MainActivity extends AppCompatActivity {
                 //do something if you want like focus on top
             }
             switch (item.getItemId()) {
-                case R.id.navigation_home:
+                case R.id.navigation_movies_tv:
+                    return true;
+                case R.id.navigation_music:
+                    return true;
+                case R.id.navigation_book:
+                    return true;
+                case R.id.navigation_newsstand:
                     return true;
                 case R.id.navigation_dashboard:
-                    return true;
-                case R.id.navigation_notifications:
-                    return true;
-                case R.id.navigation_news:
-                    return true;
-                case R.id.navigation_account:
                     return true;
             }
 

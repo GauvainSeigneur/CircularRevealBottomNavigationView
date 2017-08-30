@@ -1,11 +1,13 @@
 <resources>
     <string name="app_name">CircularRevealBottomNavigation</string>
-    <string name="title_home">Home</string>
+    <string name="title_movies_tv">Movies &amp; TV</string>
+    <string name="title_music">Music</string>
+    <string name="title_book">Book</string>
+    <string name="title_newsstand">Newsstand</string>
     <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Notifications</string>
 
     <array name="reveal_bottom_nav_bg">
-        <item>@color/colorPrimary</item>
+        <item>@color/bottomNavColor_1</item>
         <item>@color/bottomNavColor_2</item>
         <item>@color/bottomNavColor_3</item>
         <item>@color/bottomNavColor_4</item>
