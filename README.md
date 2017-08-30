@@ -8,7 +8,12 @@ Circular reveal animation that change background color of BottomNavigationView l
 
 * Multiple background reveal color for each item of the menu thanks to an arraylist of color
 * One background reveal
-* handle if is the shift mode is activated or not
+* handle if the shift mode is activated or not
+
+
+## TODO
+
+* Specific class for background view
 
 ## Screenshot
 
