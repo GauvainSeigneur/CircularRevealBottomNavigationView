@@ -9,11 +9,11 @@
 
     <!-- Bottom Navigation Color colours -->
     <color name="bottom_nav_item_unchecked_color">#40222222</color>
-    <color name="bottomNavColor_1">#29b6f6</color>
-    <color name="bottomNavColor_2">#19c498</color>
-    <color name="bottomNavColor_3">#FCD13C</color>
-    <color name="bottomNavColor_4">#F77C53</color>
-    <color name="bottomNavColor_5">#95A2B4</color>
+    <color name="bottomNavColor_1">#435A62</color>
+    <color name="bottomNavColor_2">#07856B</color>
+    <color name="bottomNavColor_3">#896A62</color>
+    <color name="bottomNavColor_4">#694842</color>
+    <color name="bottomNavColor_5">#2196F3</color>
 
     <color name="md_grey_50">#FAFAFA</color>
 
