@@ -8,14 +8,20 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.KeyCharacterMap;
+import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewAnimationUtils;
+import android.view.ViewConfiguration;
 import android.widget.CompoundButton;
+import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -24,7 +30,9 @@ public class MainActivity extends AppCompatActivity {
     private Context context;
     private BottomNavigationViewHelper mBottomNavigationViewHelper;
     private boolean mShiftingMode=true;
+    private RelativeLayout bottomNavParentlayout;
     private BottomNavigationView mBottomNavigationView;
+    private FrameLayout bottomNavBackgroundContainer;
     private View constantBackground;
     private View revealBackground;
     private View revealFront;
@@ -40,6 +48,8 @@ public class MainActivity extends AppCompatActivity {
     private int ONE_COLOR_REVEAL_MODE=0;
     private int MULTIPLE_COLOR_REVEAL_MODE=1;
     public boolean isMultipleColorRevealMode;
+    //Others Views
+    private CoordinatorLayout parentLayout;
     //todo :Just for the demo -- to be deleted
     Switch oneRevealActivator;
 
@@ -51,7 +61,10 @@ public class MainActivity extends AppCompatActivity {
         context=this;
         initViews();
         initBottomNavigationview(false,true,MULTIPLE_COLOR_REVEAL_MODE,R.color.bottomNavColor_1);
-        //
+        //redefinne height of bottom nav to set it under navigation bar
+        //only if a soft navigation bar is available
+        setBottomNavUnderNavigationbar();
+        //set up click listner on bottom navigation menu
         mBottomNavigationView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
        //todo :Just for the demo -- to be deleted
         oneRevealActivator= (Switch) findViewById(R.id.oneRevealActivation);
@@ -60,11 +73,9 @@ public class MainActivity extends AppCompatActivity {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if(isChecked) {
                     initBottomNavigationview(false,true,ONE_COLOR_REVEAL_MODE,R.color.colorPrimary);
-                    Log.d("You are :", "Checked");
                 }
                 else {
                     initBottomNavigationview(false,true,MULTIPLE_COLOR_REVEAL_MODE,R.color.bottomNavColor_1);
-                    Log.d("You are :", " Not Checked");
                 }
             }
         });
@@ -75,6 +86,9 @@ public class MainActivity extends AppCompatActivity {
      * Initialize Views
      *********************************/
     public void initViews() {
+        parentLayout =(CoordinatorLayout) findViewById(R.id.container);
+        bottomNavParentlayout = (RelativeLayout) findViewById(R.id.bottom_nav_parent_layout);
+        bottomNavBackgroundContainer = (FrameLayout) findViewById(R.id.bottom_nav_background_container);
         mBottomNavigationView = (BottomNavigationView) findViewById(R.id.navigation);
         constantBackground = findViewById(R.id.navigation_constant_background);
         revealBackground =findViewById(R.id.navigation_reveal_background);
@@ -307,6 +321,54 @@ public class MainActivity extends AppCompatActivity {
         }
 
     };
+
+    /**********************************
+     * Window Support
+     *********************************/
+    //this methd is used in addition to the style "AppTheme.BottomNavigationActivit"
+    // aplied on this activity in the manifest...
+    public void setBottomNavUnderNavigationbar() {
+        windowNoLimit();
+        if (hasSoftNavBar(this)) {
+            // 99% sure there's a navigation bar... does not work every time...
+            // so we redefine the height of the bottom navigation View
+            float newBottomNavHeight = Utils.convertDpToPixel(48+56,this);
+            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)
+                    bottomNavBackgroundContainer.getLayoutParams();
+            params.height = (int) newBottomNavHeight;
+            bottomNavBackgroundContainer.setLayoutParams(params);
+
+        } else {
+            //do nothing
+        }
+    }
+
+    //check if the device has a soft navigationbar
+    //to draw behinf if it has it
+    boolean hasSoftNavBar(Context context) {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+            // navigation bar was introduced in Android 4.0 (API level 14)
+            Resources resources = context.getResources();
+            int id = resources.getIdentifier("config_showNavigationBar", "bool", "android");
+            if (id > 0) {
+                return resources.getBoolean(id);
+            } else {
+                // Check for keys
+                boolean hasMenuKey = ViewConfiguration.get(context).hasPermanentMenuKey();
+                boolean hasBackKey = KeyCharacterMap.deviceHasKey(KeyEvent.KEYCODE_BACK);
+                return !hasMenuKey && !hasBackKey;
+            }
+        } else {
+            return false;
+        }
+    }
+    public void windowNoLimit () {
+        //this value needs to be combined with style to works fine...
+        parentLayout.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
+
+    }
 
 
 }
