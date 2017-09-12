@@ -28,6 +28,7 @@ import android.widget.TextView;
 public class MainActivity extends AppCompatActivity {
 
     private Context context;
+    private Resources res;
     private BottomNavigationViewHelper mBottomNavigationViewHelper;
     private boolean mShiftingMode=true;
     private RelativeLayout bottomNavParentlayout;
@@ -38,6 +39,10 @@ public class MainActivity extends AppCompatActivity {
     private View revealFront;
     private boolean iscolorRevealBackground;
     private static final long ACTIVE_ANIMATION_DURATION_MS = 115L;
+    private int totalNavItems;
+    private int activeWidth;
+    private int inactiveWidth;
+    private int targetWidth;
     private int[] colorNumberarray;
     //for reveal color with shift mode
     private int currentItemSelected;
@@ -59,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         context=this;
+        res = getResources();
         initViews();
         initBottomNavigationview(false,true,MULTIPLE_COLOR_REVEAL_MODE,R.color.bottomNavColor_1);
         //redefinne height of bottom nav to set it under navigation bar
@@ -139,25 +145,31 @@ public class MainActivity extends AppCompatActivity {
     /*************************************
      * Handle revealColor and Menu state
      ************************************/
+    public void retrieveMenuItemDimension() {
+        final int mInactiveItemMaxWidth = res.getDimensionPixelSize(android.support.design.R.dimen.design_bottom_navigation_item_max_width);
+        final int  mInactiveItemMinWidth = res.getDimensionPixelSize(android.support.design.R.dimen.design_bottom_navigation_item_min_width);
+        final int mActiveItemMaxWidth = res.getDimensionPixelSize(android.support.design.R.dimen.design_bottom_navigation_active_item_max_width);
+        final int inactiveCount = totalNavItems - 1;
+        final int bottomNavWidth = mBottomNavigationView.getResources().getDisplayMetrics().widthPixels;
+        //todo - commen
+        totalNavItems = mBottomNavigationView.getMenu().size();
+        //todo - comment
+        final int activeMaxAvailable = bottomNavWidth - inactiveCount * mInactiveItemMinWidth;
+        //todo - comment
+        activeWidth = Math.min(activeMaxAvailable, mActiveItemMaxWidth);
+        //todo - comment
+        final int inactiveMaxAvailable = (bottomNavWidth - activeWidth) / inactiveCount;
+        //todo - comment
+        inactiveWidth = Math.min(inactiveMaxAvailable, mInactiveItemMaxWidth);
+        //todo - comment
+        targetWidth=inactiveWidth/2;
+    }
+
+
     //Find the position of each item of the BottomNavigationView
     //Even if the shiftMode is activated
     public void findRevealPosition() {
-        final Resources res = getResources();
-        int mInactiveItemMaxWidth = res.getDimensionPixelSize(
-                android.support.design.R.dimen.design_bottom_navigation_item_max_width);
-        int mInactiveItemMinWidth = res.getDimensionPixelSize(
-                android.support.design.R.dimen.design_bottom_navigation_item_min_width);
-        int mActiveItemMaxWidth = res.getDimensionPixelSize(
-                android.support.design.R.dimen.design_bottom_navigation_active_item_max_width);
-
-        int totalNavItems =  mBottomNavigationView.getMenu().size();
-        int inactiveCount = totalNavItems - 1;
-        int width=mBottomNavigationView.getResources().getDisplayMetrics().widthPixels;
-        int activeMaxAvailable = width - inactiveCount * mInactiveItemMinWidth;
-        final int activeWidth = Math.min(activeMaxAvailable, mActiveItemMaxWidth);
-        int inactiveMaxAvailable = (width - activeWidth) / inactiveCount;
-        final int inactiveWidth = Math.min(inactiveMaxAvailable, mInactiveItemMaxWidth);
-
+        retrieveMenuItemDimension();
         //find position of selected item when shiftingmode is activated
         if (mShiftingMode==true && totalNavItems>3) {
             if (currentItemSelected == previousItemSelected) {
@@ -195,18 +207,20 @@ public class MainActivity extends AppCompatActivity {
         colorNumberarray = context.getResources().getIntArray(revalColorArray);
         Animator animatorFront =
                 ViewAnimationUtils.createCircularReveal(
-                revealFront,
-                revealFinalPosition,
-                (int) HeightrevealPosition,
-                0,
-                mBottomNavigationView.getWidth());
+                        revealFront,
+                        revealFinalPosition,
+                        (int) HeightrevealPosition,
+                        targetWidth,//0
+                        mBottomNavigationView.getWidth()
+                );
         Animator animatorBackground =
                 ViewAnimationUtils.createCircularReveal(
-                revealBackground,
-                revealFinalPosition,
-                (int) HeightrevealPosition,
-                0,
-                mBottomNavigationView.getWidth());;
+                        revealBackground,
+                        revealFinalPosition,
+                        (int) HeightrevealPosition,
+                        targetWidth,//0,
+                        mBottomNavigationView.getWidth()
+                );
 
         if (iscolorRevealBackground && currentItemSelected != previousItemSelected) {
             mBottomNavigationView.setBackgroundColor(ContextCompat.getColor(this,
