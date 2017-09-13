@@ -11,6 +11,7 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.animation.FastOutSlowInInterpolator;
+import android.support.v4.view.animation.LinearOutSlowInInterpolator;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyCharacterMap;
@@ -140,6 +141,10 @@ public class MainActivity extends AppCompatActivity {
             mShiftingMode=true;
         }
 
+        //find reveal position on initialization to avoid dummy
+        // animation position on first item selection...
+        findRevealPosition();
+
     }
 
     /*************************************
@@ -151,7 +156,7 @@ public class MainActivity extends AppCompatActivity {
         final int mActiveItemMaxWidth = res.getDimensionPixelSize(android.support.design.R.dimen.design_bottom_navigation_active_item_max_width);
         final int inactiveCount = totalNavItems - 1;
         final int bottomNavWidth = mBottomNavigationView.getResources().getDisplayMetrics().widthPixels;
-        //todo - commen
+        //todo - comment
         totalNavItems = mBottomNavigationView.getMenu().size();
         //todo - comment
         final int activeMaxAvailable = bottomNavWidth - inactiveCount * mInactiveItemMinWidth;
@@ -201,37 +206,37 @@ public class MainActivity extends AppCompatActivity {
 
     //handle reveal color background on item click
     //Handle of if you use makeMultipleRevealMode or makeOneRevealBackground
-    public void setRevealColorBackground(@Nullable int revalColorArray, final int pos){
-        findRevealPosition();
-        float HeightrevealPosition = Utils.convertDpToPixel(56/2,this);
+    public void setRevealColorAnimationBackground(@Nullable int revalColorArray, final int pos){
         colorNumberarray = context.getResources().getIntArray(revalColorArray);
-        Animator animatorFront =
-                ViewAnimationUtils.createCircularReveal(
-                        revealFront,
-                        revealFinalPosition,
-                        (int) HeightrevealPosition,
-                        targetWidth,//0
-                        mBottomNavigationView.getWidth()
-                );
-        Animator animatorBackground =
-                ViewAnimationUtils.createCircularReveal(
-                        revealBackground,
-                        revealFinalPosition,
-                        (int) HeightrevealPosition,
-                        targetWidth,//0,
-                        mBottomNavigationView.getWidth()
-                );
 
         if (iscolorRevealBackground && currentItemSelected != previousItemSelected) {
             mBottomNavigationView.setBackgroundColor(ContextCompat.getColor(this,
                     android.R.color.transparent));
             if (isMultipleColorRevealMode) {
-                makeMultipleRevealMode(animatorFront, pos);
+                makeMultipleRevealMode(circularRevealAnimator(revealFront, targetWidth), pos);
             } else {
-                makeOneRevealBackground(animatorFront,animatorBackground);
+                makeOneRevealBackground(circularRevealAnimator(revealFront, (targetWidth-56)),
+                        circularRevealAnimator(revealBackground,targetWidth));
             }
         }
 
+    }
+
+    //Circular Reveal Animator
+    private Animator circularRevealAnimator (View viewTarget, int startRevealRadius){
+        findRevealPosition();
+        float HeightrevealPosition = Utils.convertDpToPixel(56/2,this);
+        Animator animator =
+                ViewAnimationUtils.createCircularReveal(
+                        viewTarget,
+                        revealFinalPosition,
+                        (int) HeightrevealPosition,
+                        startRevealRadius,//0,
+                        mBottomNavigationView.getWidth()
+                );
+        //duration : triple of icon animation duration
+        animator.setDuration(ACTIVE_ANIMATION_DURATION_MS * 3);
+        return animator;
     }
 
     //Used to make different color for each item thanks to a array of color hexa
@@ -248,9 +253,7 @@ public class MainActivity extends AppCompatActivity {
                 revealBackground.setBackgroundColor(colorNumberarray[pos]);
             }
         });
-        //duration : triple of icon animation duration
-        animator.setDuration(ACTIVE_ANIMATION_DURATION_MS * 3);
-        animator.setInterpolator(new FastOutSlowInInterpolator());
+
         animator.start();
 
     }
@@ -271,8 +274,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        animatorRevealFront.setDuration(ACTIVE_ANIMATION_DURATION_MS * 4);
-        animatorRevealFront.setInterpolator(new FastOutSlowInInterpolator());
         animatorRevealFront.start();
 
 
@@ -288,9 +289,6 @@ public class MainActivity extends AppCompatActivity {
                 super.onAnimationEnd(animation);
             }
         });
-
-        animatorRevealbackground.setDuration(ACTIVE_ANIMATION_DURATION_MS * 3);
-        animatorRevealbackground.setInterpolator(new FastOutSlowInInterpolator());
         animatorRevealbackground.start();
     }
 
@@ -314,7 +312,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             updateBottomNavMenuState(item);
-            setRevealColorBackground(R.array.reveal_bottom_nav_bg, currentItemSelected);
+            setRevealColorAnimationBackground(R.array.reveal_bottom_nav_bg, currentItemSelected);
             if (currentItemSelected!=previousItemSelected) {
                 //do something if you want like focus on top
             }
