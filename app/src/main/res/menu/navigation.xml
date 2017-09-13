@@ -9,7 +9,7 @@
     <item
         android:id="@+id/navigation_music"
         android:icon="@drawable/ic_music_note_black_24dp"
-        android:title="@string/title_movies_tv" />
+        android:title="@string/title_music" />
 
     <item
         android:id="@+id/navigation_book"
