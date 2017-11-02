@@ -33,6 +33,14 @@
                 android:padding="16dp"
                 android:text="One reveal Mode"/>
 
+            <Switch
+                android:id="@+id/keepViewActivation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:padding="16dp"
+                android:text="keep View activated"/>
+
         </LinearLayout>
 
 
@@ -63,6 +71,20 @@
                 android:id="@+id/navigation_reveal_front"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"/>
+
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/bottom_navigation_height">
+
+            <View
+                android:id="@+id/selector_round"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:background="@drawable/round_shape"
+                android:backgroundTint="@color/colorAccent"/>
 
         </FrameLayout>
 
