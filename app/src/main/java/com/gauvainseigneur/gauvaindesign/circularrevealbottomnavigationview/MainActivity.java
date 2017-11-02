@@ -40,7 +40,6 @@ public class MainActivity extends AppCompatActivity {
     private RelativeLayout bottomNavParentlayout;
     private BottomNavigationView mBottomNavigationView;
     private FrameLayout bottomNavBackgroundContainer;
-    private View constantBackground;
     private View revealBackground;
     private View revealFront;
     private boolean iscolorRevealBackground;
@@ -58,9 +57,7 @@ public class MainActivity extends AppCompatActivity {
     private int revealItemPosition;
     private int revealFinalPosition;
     //choose type of colorRevealMode
-    private int ONE_COLOR_REVEAL_MODE=0;
     private int MULTIPLE_COLOR_REVEAL_MODE=1;
-    public boolean isMultipleColorRevealMode;
     //Others Views
     private CoordinatorLayout parentLayout;
     //todo :Just for the demo -- to be deleted
@@ -68,7 +65,6 @@ public class MainActivity extends AppCompatActivity {
     Switch keepActiveView;
 
     View selectorRound;
-    View selectorRoundBackground;
 
     int selectedBottomNavItemWidth;
     int unselectedBottomNavItemWidth;
@@ -82,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
         context=this;
         res = getResources();
         initViews();
-        initBottomNavigationview(false,true,MULTIPLE_COLOR_REVEAL_MODE,R.color.bottomNavColor_1);
+        initBottomNavigationview(false,true,R.color.bottomNavColor_1);
         //redefinne height of bottom nav to set it under navigation bar
         //only if a soft navigation bar is available
         setBottomNavUnderNavigationbar();
@@ -90,30 +86,7 @@ public class MainActivity extends AppCompatActivity {
         mBottomNavigationView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         //todo :Just for the demo -- to be deleted
         oneRevealActivator= (Switch) findViewById(R.id.oneRevealActivation);
-        oneRevealActivator.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked) {
-                    initBottomNavigationview(false,true,ONE_COLOR_REVEAL_MODE,R.color.colorPrimary);
-                }
-                else {
-                    initBottomNavigationview(false,true,MULTIPLE_COLOR_REVEAL_MODE,R.color.bottomNavColor_1);
-                }
-            }
-        });
 
-        keepActiveView= (Switch) findViewById(R.id.keepViewActivation);
-        keepActiveView.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked) {
-                    initBottomNavigationview(false,false,MULTIPLE_COLOR_REVEAL_MODE,R.color.bottomNavColor_1);
-                }
-                else {
-                    initBottomNavigationview(false,true,MULTIPLE_COLOR_REVEAL_MODE,R.color.bottomNavColor_1);
-                }
-            }
-        });
 
     }
 
@@ -125,7 +98,6 @@ public class MainActivity extends AppCompatActivity {
         bottomNavParentlayout = (RelativeLayout) findViewById(R.id.bottom_nav_parent_layout);
         bottomNavBackgroundContainer = (FrameLayout) findViewById(R.id.bottom_nav_background_container);
         mBottomNavigationView = (BottomNavigationView) findViewById(R.id.navigation);
-        constantBackground = findViewById(R.id.navigation_constant_background);
         revealBackground =findViewById(R.id.navigation_reveal_background);
         revealFront =findViewById(R.id.navigation_reveal_front);
         selectorRound =findViewById(R.id.selector_round);
@@ -134,29 +106,20 @@ public class MainActivity extends AppCompatActivity {
     /**********************************
      * Initialize BottomNav Behavior
      *********************************/
-    public void initBottomNavigationview(boolean disableShiftMode, boolean makeRevealBackgroundAnimation, int revealMode, int constantBackgroundColor) {
+    public void initBottomNavigationview(boolean disableShiftMode,
+                                         boolean makeRevealBackgroundAnimation,
+                                         int constantBackgroundColor) {
         iscolorRevealBackground = makeRevealBackgroundAnimation;
         if (makeRevealBackgroundAnimation==true) {
             revealFront.setVisibility(View.VISIBLE);
             revealFront.setBackgroundColor(ContextCompat.getColor(this, constantBackgroundColor));
             revealBackground.setVisibility(View.VISIBLE);
-            revealBackground.setBackgroundColor(ContextCompat.getColor(this,
-                    constantBackgroundColor));
-            mBottomNavigationView.setBackgroundColor(ContextCompat.getColor(this,
-                    android.R.color.transparent));
-            if (revealMode==ONE_COLOR_REVEAL_MODE){
-                isMultipleColorRevealMode=false;
-                constantBackground.setVisibility(View.VISIBLE);
-                constantBackground.setBackgroundColor(ContextCompat.getColor(this,
-                        constantBackgroundColor));
-            } else if (revealMode==MULTIPLE_COLOR_REVEAL_MODE){
-                isMultipleColorRevealMode=true;
-            }
+            revealBackground.setBackgroundColor(ContextCompat.getColor(this, constantBackgroundColor));
+            mBottomNavigationView.setBackgroundColor(ContextCompat.getColor(this, android.R.color.transparent));
         }else {
-            constantBackground.setVisibility(View.GONE);
             revealFront.setVisibility(View.GONE);
             revealBackground.setVisibility(View.GONE);
-            //mBottomNavigationView.setBackgroundColor(ContextCompat.getColor(this, constantBackgroundColor));
+            mBottomNavigationView.setBackgroundColor(ContextCompat.getColor(this, constantBackgroundColor));
         }
 
         if (disableShiftMode==true) {
@@ -166,15 +129,14 @@ public class MainActivity extends AppCompatActivity {
             mShiftingMode=true;
         }
 
-        //find reveal position on initialization to avoid dummy
-        // animation position on first item selection...
-        findRevealPosition();
-
     }
 
     /*************************************
      * Handle revealColor and Menu state
      ************************************/
+    /**
+     *
+     */
     public void retrieveMenuItemDimension() {
         //Retrieve activeWidth && inactivewidth when shiftmode is activated or not
         final int mInactiveItemMaxWidth = res.getDimensionPixelSize(android.support.design.R.dimen.design_bottom_navigation_item_max_width);
@@ -191,8 +153,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    //Find the position of each item of the BottomNavigationView
-    //Even if the shiftMode is activated
+    /**
+     *
+     */
     public void findRevealPosition() {
         retrieveMenuItemDimension();
         //find position of selected item when shiftingmode is activated
@@ -227,39 +190,36 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    //handle reveal color background on item click
-    //Handle of if you use makeMultipleRevealMode or makeOneRevealBackground
+    /**
+     *
+     * @param revalColorArray
+     * @param pos
+     */
     public void setRevealColorAnimationBackground(@Nullable int revalColorArray, final int pos){
         colorNumberarray = context.getResources().getIntArray(revalColorArray);
 
         if (iscolorRevealBackground && currentItemSelected != previousItemSelected) {
-            mBottomNavigationView.setBackgroundColor(ContextCompat.getColor(this,
-                    android.R.color.transparent));
-            if (isMultipleColorRevealMode) {
-                makeMultipleRevealMode(circularRevealAnimator2(revealFront,
-                        targetWidth),
-                        pos
-                );
-                makeSelectorAnimation(circularRevealAnimator(
-                        selectorRound,
-                        targetWidth),
-                        pos, //position for circular reval start
-                        selectedBottomNavItemWidth+20,
-                        mBottomNavigationView.getHeight()*3, //height
-                        (unselectedBottomNavItemWidth*pos)-10, //margin left
-                        0 //margin right
-                );
-                translateX(selectorRound,fromRightToLeft);
-
-                Toast.makeText(this, ""+pos+" "+targetWidth+"_ "+revealFinalPosition+"_"+fromRightToLeft, Toast.LENGTH_SHORT).show();
-            } else {
-                makeOneRevealBackground(circularRevealAnimator(revealFront, (targetWidth-56)),
-                        circularRevealAnimator(revealBackground,targetWidth));
-            }
+            //animation
+            colorCircularRevealAnimator(revealFront, targetWidth, pos);
+            //second animation
+            roundedSelectorRevealAnimation(
+                    selectorRound,
+                    targetWidth,
+                    pos, //position for circular reval start
+                    selectedBottomNavItemWidth+20,
+                    mBottomNavigationView.getHeight()*3, //height
+                    (unselectedBottomNavItemWidth*pos)-10, //margin left
+                    0 //margin right
+            );
         }
 
     }
 
+    /**
+     *
+     * @param target
+     * @param fromRightToLeft
+     */
     public void translateX(View target, Boolean fromRightToLeft) {
         final Animation animation;
         if (fromRightToLeft){
@@ -273,9 +233,51 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    //Circular Reveal Animator
-    //TODO: make animatorset to fusion with translateX
-    private Animator circularRevealAnimator (View viewTarget, int startRevealRadius){
+
+    /**
+     *
+     * @param animator
+     * @param pos
+     * @param width
+     * @param height
+     * @param left
+     * @param right
+     */
+    private void makeRoundedSelectorAnimation(Animator animator,final int pos,
+                                       final int width, final int height,
+                                       final int left, final int right){
+        animator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                //selectorRound.setBackgroundColor(colorNumberarray[pos]);
+                final FrameLayout.LayoutParams layoutParams=new FrameLayout.LayoutParams(width, height);
+                layoutParams.setMargins(left, 0, right, 0);
+                layoutParams.gravity= Gravity.CENTER_VERTICAL;
+                selectorRound.setLayoutParams(layoutParams);
+                selectorRound.setVisibility(View.VISIBLE);
+                translateX(selectorRound,fromRightToLeft);
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                super.onAnimationEnd(animation);
+            }
+        });
+
+        animator.start();
+
+    }
+
+    /**
+     *
+     * @param viewTarget
+     * @param startRevealRadius
+     * @return
+     */
+    private Animator roundedSelectorRevealAnimation (View viewTarget, int startRevealRadius,
+                                                     final int pos,
+                                                     final int width, final int height,
+                                                     final int left, final int right){
         findRevealPosition();
         Animator animator =
                 ViewAnimationUtils.createCircularReveal(
@@ -287,29 +289,7 @@ public class MainActivity extends AppCompatActivity {
                 );
         //duration : triple of icon animation duration
         animator.setDuration(REVEAL_ANIMATION_DURATION_MS);
-        return animator;
-    }
 
-    //TODO: make animatorset to fusion with translateX
-    //todo : to mix circularRevealAnimator
-    private Animator circularRevealAnimator2 (View viewTarget, int startRevealRadius){
-        findRevealPosition();
-        float HeightrevealPosition = Utils.convertDpToPixel(56/2,this);
-        Animator animator =
-                ViewAnimationUtils.createCircularReveal(
-                        viewTarget,
-                        revealFinalPosition,
-                        (int) HeightrevealPosition,
-                        startRevealRadius,//0,
-                        mBottomNavigationView.getWidth()
-                );
-        //duration : triple of icon animation duration
-        animator.setDuration(REVEAL_ANIMATION_DURATION_MS);
-        return animator;
-    }
-
-    //Used to make different color for each item thanks to a array of color hexa
-    private void makeSelectorAnimation(Animator animator,final int pos, final int width, final int height, final int left, final int right){
         animator.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationStart(Animator animation) {
@@ -319,6 +299,7 @@ public class MainActivity extends AppCompatActivity {
                 layoutParams.gravity= Gravity.CENTER_VERTICAL;
                 selectorRound.setLayoutParams(layoutParams);
                 selectorRound.setVisibility(View.VISIBLE);
+                translateX(selectorRound,fromRightToLeft);
             }
 
             @Override
@@ -327,16 +308,39 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        animator.start();
 
+        animator.start();
+        return animator;
     }
 
-    //Used to make different color for each item thanks to a array of color hexa
-    private void makeMultipleRevealMode(Animator animator,final int pos){
+
+
+    /**
+     *
+     * @param viewTarget
+     * @param startRevealRadius
+     * @return
+     */
+    private Animator colorCircularRevealAnimator (View viewTarget, int startRevealRadius, final int pos){
+        findRevealPosition();
+        float HeightrevealPosition = Utils.convertDpToPixel(56/2,this);
+        Animator animator =
+                ViewAnimationUtils.createCircularReveal(
+
+                        viewTarget,
+                        revealFinalPosition,
+                        (int) HeightrevealPosition,
+                        startRevealRadius,//0,
+                        mBottomNavigationView.getWidth()
+                );
+        //duration : triple of icon animation duration
+        animator.setDuration(REVEAL_ANIMATION_DURATION_MS);
+
         animator.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationStart(Animator animation) {
                 revealFront.setBackgroundColor(colorNumberarray[pos]);
+                translateX(revealFront,fromRightToLeft);
             }
 
             @Override
@@ -346,45 +350,15 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
         animator.start();
-
+        return animator;
     }
 
-    //Used to make just one color for reveal
-    public void makeOneRevealBackground(Animator animatorRevealFront, Animator animatorRevealbackground){
-        animatorRevealFront.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationStart(Animator animation) {
-                revealFront.setBackgroundColor(ContextCompat.getColor(MainActivity.this,
-                        R.color.colorPrimary));
-            }
-
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                super.onAnimationEnd(animation);
-            }
-        });
-
-        animatorRevealFront.start();
-
-
-        animatorRevealbackground.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationStart(Animator animation) {
-                revealBackground.setBackgroundColor(ContextCompat.getColor(MainActivity.this,
-                        R.color.colorWhite));
-            }
-
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                super.onAnimationEnd(animation);
-            }
-        });
-        animatorRevealbackground.start();
-    }
-
-    //retrieve the menu state
-    //used to define the previous selected item and the current
+    /**
+     *
+     * @param item
+     */
     private void updateBottomNavMenuState(@NonNull MenuItem item) {
         for (int i=0;i<mBottomNavigationView.getMenu().size();i++){
             if(item==mBottomNavigationView.getMenu().getItem(i)){
