@@ -232,41 +232,7 @@ public class MainActivity extends AppCompatActivity {
         target.setAnimation(animation);
 
     }
-
-
-    /**
-     *
-     * @param animator
-     * @param pos
-     * @param width
-     * @param height
-     * @param left
-     * @param right
-     */
-    private void makeRoundedSelectorAnimation(Animator animator,final int pos,
-                                       final int width, final int height,
-                                       final int left, final int right){
-        animator.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationStart(Animator animation) {
-                //selectorRound.setBackgroundColor(colorNumberarray[pos]);
-                final FrameLayout.LayoutParams layoutParams=new FrameLayout.LayoutParams(width, height);
-                layoutParams.setMargins(left, 0, right, 0);
-                layoutParams.gravity= Gravity.CENTER_VERTICAL;
-                selectorRound.setLayoutParams(layoutParams);
-                selectorRound.setVisibility(View.VISIBLE);
-                translateX(selectorRound,fromRightToLeft);
-            }
-
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                super.onAnimationEnd(animation);
-            }
-        });
-
-        animator.start();
-
-    }
+    
 
     /**
      *
