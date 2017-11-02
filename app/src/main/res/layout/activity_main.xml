@@ -52,15 +52,11 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom">
 
+        <!--Option 1: Use this if you want multiple color reveal animation-->
         <FrameLayout
             android:id="@+id/bottom_nav_background_container"
             android:layout_width="match_parent"
             android:layout_height="@dimen/bottom_navigation_height">
-
-            <View
-                android:id="@+id/navigation_constant_background"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
 
             <View
                 android:id="@+id/navigation_reveal_background"
@@ -74,6 +70,7 @@
 
         </FrameLayout>
 
+        <!--Option 2: Use this if you want an always visible selector with reveal animation-->
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="@dimen/bottom_navigation_height">
