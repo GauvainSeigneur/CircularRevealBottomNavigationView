@@ -78,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
         context=this;
         res = getResources();
         initViews();
-        initBottomNavigationview(false,true,R.color.bottomNavColor_1);
+        initBottomNavigationview(false,false,R.color.colorPrimary);
         //redefinne height of bottom nav to set it under navigation bar
         //only if a soft navigation bar is available
         setBottomNavUnderNavigationbar();
@@ -106,20 +106,22 @@ public class MainActivity extends AppCompatActivity {
     /**********************************
      * Initialize BottomNav Behavior
      *********************************/
+    //just for the demo
     public void initBottomNavigationview(boolean disableShiftMode,
                                          boolean makeRevealBackgroundAnimation,
                                          int constantBackgroundColor) {
         iscolorRevealBackground = makeRevealBackgroundAnimation;
-        if (makeRevealBackgroundAnimation==true) {
+        mBottomNavigationView.setBackgroundColor(ContextCompat.getColor(this, android.R.color.transparent));
+        if (makeRevealBackgroundAnimation) {
+            selectorRound.setVisibility(View.GONE);
             revealFront.setVisibility(View.VISIBLE);
             revealFront.setBackgroundColor(ContextCompat.getColor(this, constantBackgroundColor));
             revealBackground.setVisibility(View.VISIBLE);
             revealBackground.setBackgroundColor(ContextCompat.getColor(this, constantBackgroundColor));
-            mBottomNavigationView.setBackgroundColor(ContextCompat.getColor(this, android.R.color.transparent));
         }else {
-            revealFront.setVisibility(View.GONE);
+            selectorRound.setVisibility(View.VISIBLE);
+            revealFront.setBackgroundColor(ContextCompat.getColor(this, constantBackgroundColor));
             revealBackground.setVisibility(View.GONE);
-            mBottomNavigationView.setBackgroundColor(ContextCompat.getColor(this, constantBackgroundColor));
         }
 
         if (disableShiftMode==true) {
@@ -198,19 +200,22 @@ public class MainActivity extends AppCompatActivity {
     public void setRevealColorAnimationBackground(@Nullable int revalColorArray, final int pos){
         colorNumberarray = context.getResources().getIntArray(revalColorArray);
 
-        if (iscolorRevealBackground && currentItemSelected != previousItemSelected) {
-            //animation
-            colorCircularRevealAnimator(revealFront, targetWidth, pos);
-            //second animation
-            roundedSelectorRevealAnimation(
-                    selectorRound,
-                    targetWidth,
-                    pos, //position for circular reval start
-                    selectedBottomNavItemWidth+20,
-                    mBottomNavigationView.getHeight()*3, //height
-                    (unselectedBottomNavItemWidth*pos)-10, //margin left
-                    0 //margin right
-            );
+        if (currentItemSelected != previousItemSelected) {
+            if (iscolorRevealBackground) {
+                //animation
+                colorCircularRevealAnimator(revealFront, targetWidth, pos);
+            } else {
+                //second animation
+                roundedSelectorRevealAnimation(
+                        selectorRound,
+                        targetWidth,
+                        pos, //position for circular reval start
+                        selectedBottomNavItemWidth+20,
+                        mBottomNavigationView.getHeight()*3, //height
+                        (unselectedBottomNavItemWidth*pos)-10, //margin left
+                        0 //margin right
+                );
+            }
         }
 
     }
@@ -232,7 +237,7 @@ public class MainActivity extends AppCompatActivity {
         target.setAnimation(animation);
 
     }
-    
+
 
     /**
      *
@@ -265,7 +270,8 @@ public class MainActivity extends AppCompatActivity {
                 layoutParams.gravity= Gravity.CENTER_VERTICAL;
                 selectorRound.setLayoutParams(layoutParams);
                 selectorRound.setVisibility(View.VISIBLE);
-                translateX(selectorRound,fromRightToLeft);
+                if (mShiftingMode==true)
+                    translateX(selectorRound,fromRightToLeft);
             }
 
             @Override
@@ -306,7 +312,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onAnimationStart(Animator animation) {
                 revealFront.setBackgroundColor(colorNumberarray[pos]);
-                translateX(revealFront,fromRightToLeft);
+                if (mShiftingMode==true)
+                    translateX(revealFront,fromRightToLeft);
             }
 
             @Override

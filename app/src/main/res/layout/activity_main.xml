@@ -77,11 +77,12 @@
 
             <View
                 android:id="@+id/selector_round"
+                android:visibility="gone"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:background="@drawable/round_shape"
-                android:backgroundTint="@color/colorAccent"/>
+                android:backgroundTint="@color/colorPrimaryDark"/>
 
         </FrameLayout>
 
