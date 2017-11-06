@@ -25,21 +25,34 @@
                 android:layout_width="match_parent"
                 android:layout_height="24dp"/>
 
-            <Switch
-                android:id="@+id/oneRevealActivation"
+            <RadioGroup
+                android:id="@+id/radio_group_choice"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:padding="16dp"
-                android:text="One reveal Mode"/>
+                android:checkedButton="@+id/colorRevealRadio"
+                android:padding="16dp">
+
+                <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/colorRevealRadio"
+                    android:text="Multiple color Reveal" />
+
+                <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/selectorRevealradio"
+                    android:text="One selector reveal" />
+
+            </RadioGroup>
 
             <Switch
-                android:id="@+id/keepViewActivation"
+                android:padding="16dp"
+                android:id="@+id/shiftMode_activator"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:padding="16dp"
-                android:text="keep View activated"/>
+                android:text="Shift Mode"
+                android:checked="true"/>
 
         </LinearLayout>
 

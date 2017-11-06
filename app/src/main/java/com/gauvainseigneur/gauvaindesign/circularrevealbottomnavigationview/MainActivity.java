@@ -7,6 +7,7 @@ import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.internal.BottomNavigationMenu;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.content.ContextCompat;
@@ -26,6 +27,7 @@ import android.view.animation.TranslateAnimation;
 import android.widget.CompoundButton;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -40,36 +42,37 @@ public class MainActivity extends AppCompatActivity {
     private RelativeLayout bottomNavParentlayout;
     private BottomNavigationView mBottomNavigationView;
     private FrameLayout bottomNavBackgroundContainer;
+    //view used for reveal animation
     private View revealBackground;
     private View revealFront;
+    private View selectorRound;
     private boolean iscolorRevealBackground;
     private static final long ACTIVE_ANIMATION_DURATION_MS = 115L;
     private static final long REVEAL_ANIMATION_DURATION_MS = 445L;
     private static final long TRANSLATE_ANIMATION_DURATION_MS = 227L;
+    //int for menu item dimension
+    private int[] mTempChildWidths;
+    private int mSelectedItemPosition = 0;
+    int childWidth;
+    int extra;
     private int totalNavItems;
     private int activeWidth;
     private int inactiveWidth;
-    private int targetWidth;
+    //private int targetWidth;
     private int[] colorNumberarray;
     //for reveal color with shift mode
     private int currentItemSelected;
     private int previousItemSelected;
     private int revealItemPosition;
     private int revealFinalPosition;
-    //choose type of colorRevealMode
-    private int MULTIPLE_COLOR_REVEAL_MODE=1;
+    boolean fromRightToLeft;
     //Others Views
     private CoordinatorLayout parentLayout;
-    //todo :Just for the demo -- to be deleted
-    Switch oneRevealActivator;
-    Switch keepActiveView;
 
-    View selectorRound;
+    int REVEAL_COLOR_MODE = 0;
+    int REVEAL_SELECTOR_MODE = 1;
 
-    int selectedBottomNavItemWidth;
-    int unselectedBottomNavItemWidth;
-    boolean fromRightToLeft;
-
+    RadioGroup radioGroup;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,15 +81,40 @@ public class MainActivity extends AppCompatActivity {
         context=this;
         res = getResources();
         initViews();
-        initBottomNavigationview(false,false,R.color.colorPrimary);
         //redefinne height of bottom nav to set it under navigation bar
         //only if a soft navigation bar is available
+        initBottomNavigationview(REVEAL_COLOR_MODE,R.color.bottomNavColor_1);
         setBottomNavUnderNavigationbar();
         //set up click listner on bottom navigation menu
         mBottomNavigationView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         //todo :Just for the demo -- to be deleted
-        oneRevealActivator= (Switch) findViewById(R.id.oneRevealActivation);
+        radioGroup = (RadioGroup) findViewById(R.id.radio_group_choice);
+        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                // find which radio button is selected
+                if(checkedId == R.id.colorRevealRadio) {
+                    initBottomNavigationview(REVEAL_COLOR_MODE,R.color.bottomNavColor_1);
+                } else {
+                    initBottomNavigationview(REVEAL_SELECTOR_MODE,R.color.colorPrimary);
+                }
+            }
 
+        });
+
+        Switch switchShiftMode = (Switch) findViewById(R.id.shiftMode_activator);
+        switchShiftMode.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    disableShiftMode(false);
+                    //reinitializie bottom nav after disable or not shiftmode
+                    radioGroup.check(radioGroup.getCheckedRadioButtonId());
+                } else {
+                    disableShiftMode(true);
+                    radioGroup.check(radioGroup.getCheckedRadioButtonId());
+                }
+            }
+        });
 
     }
 
@@ -107,89 +135,131 @@ public class MainActivity extends AppCompatActivity {
      * Initialize BottomNav Behavior
      *********************************/
     //just for the demo
-    public void initBottomNavigationview(boolean disableShiftMode,
-                                         boolean makeRevealBackgroundAnimation,
+    public void initBottomNavigationview(int makeRevealBackgroundAnimation,
                                          int constantBackgroundColor) {
-        iscolorRevealBackground = makeRevealBackgroundAnimation;
         mBottomNavigationView.setBackgroundColor(ContextCompat.getColor(this, android.R.color.transparent));
-        if (makeRevealBackgroundAnimation) {
+        if (makeRevealBackgroundAnimation == REVEAL_COLOR_MODE) {
+            iscolorRevealBackground = true;
             selectorRound.setVisibility(View.GONE);
             revealFront.setVisibility(View.VISIBLE);
             revealFront.setBackgroundColor(ContextCompat.getColor(this, constantBackgroundColor));
             revealBackground.setVisibility(View.VISIBLE);
             revealBackground.setBackgroundColor(ContextCompat.getColor(this, constantBackgroundColor));
         }else {
+            iscolorRevealBackground = false;
             selectorRound.setVisibility(View.VISIBLE);
             revealFront.setBackgroundColor(ContextCompat.getColor(this, constantBackgroundColor));
             revealBackground.setVisibility(View.GONE);
         }
 
+        mTempChildWidths = new int[BottomNavigationMenu.MAX_ITEM_COUNT];
+
+    }
+    public void disableShiftMode(boolean disableShiftMode){
         if (disableShiftMode==true) {
             mBottomNavigationViewHelper.disableShiftMode(mBottomNavigationView);
             mShiftingMode=false;
         } else {
             mShiftingMode=true;
         }
-
     }
+
 
     /*************************************
      * Handle revealColor and Menu state
      ************************************/
     /**
+     *Retrieve menu item dimension in their different states
+     *Active & Inactive
      *
+     * After that find Reveal position named revealFinalPosition
      */
-    public void retrieveMenuItemDimension() {
+    public void findRevealPosition() {
+        //number of item of the menu
+        totalNavItems = mBottomNavigationView.getMenu().size();
         //Retrieve activeWidth && inactivewidth when shiftmode is activated or not
         final int mInactiveItemMaxWidth = res.getDimensionPixelSize(android.support.design.R.dimen.design_bottom_navigation_item_max_width);
         final int mInactiveItemMinWidth = res.getDimensionPixelSize(android.support.design.R.dimen.design_bottom_navigation_item_min_width);
         final int mActiveItemMaxWidth = res.getDimensionPixelSize(android.support.design.R.dimen.design_bottom_navigation_active_item_max_width);
-        final int inactiveCount = totalNavItems - 1;
-        final int bottomNavWidth = mBottomNavigationView.getResources().getDisplayMetrics().widthPixels;
-        totalNavItems = mBottomNavigationView.getMenu().size();
-        final int activeMaxAvailable = bottomNavWidth - inactiveCount * mInactiveItemMinWidth;
-        activeWidth = Math.min(activeMaxAvailable, mActiveItemMaxWidth);
-        final int inactiveMaxAvailable = (bottomNavWidth - activeWidth) / inactiveCount;
-        inactiveWidth = Math.min(inactiveMaxAvailable, mInactiveItemMaxWidth);
-        targetWidth=inactiveWidth/2;
-    }
+        //width of BottomNavigation
+        final int width = mBottomNavigationView.getResources().getDisplayMetrics().widthPixels;
+        final int count = mBottomNavigationView.getMenu().size();
 
+        if (mShiftingMode) {
+            //STEP 1: retrieve menu item dimension in all state if shiftmode is active
+            final int inactiveCount = totalNavItems - 1;
+            final int activeMaxAvailable = width - inactiveCount * mInactiveItemMinWidth;
+            activeWidth = Math.min(activeMaxAvailable, mActiveItemMaxWidth);
+            final int inactiveMaxAvailable = (width - activeWidth) / inactiveCount;
+            inactiveWidth = Math.min(inactiveMaxAvailable, mInactiveItemMaxWidth);
+            extra = width - activeWidth - inactiveWidth * inactiveCount;
+            for (int i = 0; i < count; i++) {
+                mTempChildWidths[i] = (i == mSelectedItemPosition) ? activeWidth : inactiveWidth;
+                if (extra > 0) {
+                    mTempChildWidths[i]++;
+                    extra--;
+                }
+            }
+            //STEP 2: define reveal position according to menu item dimensions
+            if (totalNavItems>3) {
+                if (currentItemSelected == previousItemSelected) {
+                    revealItemPosition = activeWidth / 2;
+                    revealFinalPosition = revealItemPosition + (inactiveWidth * currentItemSelected);
+                } else {
+                    revealItemPosition = inactiveWidth / 2;
+                    if (currentItemSelected < previousItemSelected) {
+                        revealFinalPosition = revealItemPosition + (inactiveWidth * currentItemSelected);
+                        //item will move from left to right
+                        fromRightToLeft = false;
+                    } else if (currentItemSelected > previousItemSelected) {
+                        revealFinalPosition = revealItemPosition + activeWidth + (inactiveWidth * (currentItemSelected - 1));
+                        //item will move from left to right
+                        fromRightToLeft = true;
+                    }
+                }
+
+            }
+
+        }
+
+        else {
+            //STEP 1: Retrieve menu item dimension in all state if shiftmode is unactive
+            final int maxAvailable = width / (count == 0 ? 1 : count);
+            childWidth = Math.min(maxAvailable, mActiveItemMaxWidth);
+            inactiveWidth = childWidth;
+            activeWidth = childWidth;
+            extra = width - childWidth * count;
+            for (int i = 0; i < count; i++) {
+                mTempChildWidths[i] = childWidth;
+                if (extra > 0) {
+                    mTempChildWidths[i]++;
+                    extra--;
+                }
+            }
+
+            //STEP 2: define reveal position according to menu item dimensions
+            double itemTargetCenter = (((childWidth)*(currentItemSelected+1)) -(childWidth/2)); //find center of selected item
+            revealFinalPosition = (int) itemTargetCenter;
+
+        }
+    }
 
     /**
      *
+     * @param target
+     * @param fromRightToLeft
      */
-    public void findRevealPosition() {
-        retrieveMenuItemDimension();
-        //find position of selected item when shiftingmode is activated
-        if (mShiftingMode==true && totalNavItems>3) {
-            if (currentItemSelected == previousItemSelected) {
-                revealItemPosition = activeWidth / 2;
-                revealFinalPosition = revealItemPosition + (inactiveWidth * currentItemSelected);
-            } else {
-                revealItemPosition = inactiveWidth / 2;
-                if (currentItemSelected < previousItemSelected) {
-                    revealFinalPosition = revealItemPosition + (inactiveWidth * currentItemSelected);
-                    //item will move from left to right
-                    fromRightToLeft=false;
-                } else if (currentItemSelected > previousItemSelected) {
-                    revealFinalPosition = revealItemPosition + activeWidth + (inactiveWidth * (currentItemSelected - 1));
-                    //item will move from left to right
-                    fromRightToLeft=true;
-                }
-            }
-            selectedBottomNavItemWidth = activeWidth;
-            unselectedBottomNavItemWidth = inactiveWidth;
-
+    public void translateX(View target, Boolean fromRightToLeft) {
+        final Animation animation;
+        if (fromRightToLeft){
+            animation = new TranslateAnimation((inactiveWidth-20),0,0,0);
         } else {
-            //if shiftmode is disabled or number of item is under four,
-            //the item are equally distribued inside menu
-            //we use these method to find the center of each item
-            int bottomNavWidth = (getResources().getDisplayMetrics().widthPixels);
-            selectedBottomNavItemWidth = ((bottomNavWidth/totalNavItems)); //find width of items
-            unselectedBottomNavItemWidth = selectedBottomNavItemWidth;
-            double itemTargetCenter = (((selectedBottomNavItemWidth)*(currentItemSelected+1)) -(selectedBottomNavItemWidth/2)); //find center of selected item
-            revealFinalPosition = (int) itemTargetCenter;
+            animation = new TranslateAnimation(-(inactiveWidth-20),0,0,0);
         }
+
+        animation.setDuration(TRANSLATE_ANIMATION_DURATION_MS);
+        target.setAnimation(animation);
+
     }
 
     /**
@@ -203,16 +273,16 @@ public class MainActivity extends AppCompatActivity {
         if (currentItemSelected != previousItemSelected) {
             if (iscolorRevealBackground) {
                 //animation
-                colorCircularRevealAnimator(revealFront, targetWidth, pos);
+                colorCircularRevealAnimator(revealFront, inactiveWidth-20, pos); //targetWidth
             } else {
                 //second animation
                 roundedSelectorRevealAnimation(
                         selectorRound,
-                        targetWidth,
+                        inactiveWidth-20, //targetWidth
                         pos, //position for circular reval start
-                        selectedBottomNavItemWidth+20,
+                        activeWidth+20,
                         mBottomNavigationView.getHeight()*3, //height
-                        (unselectedBottomNavItemWidth*pos)-10, //margin left
+                        (inactiveWidth*pos)-10, //margin left
                         0 //margin right
                 );
             }
@@ -222,30 +292,12 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      *
-     * @param target
-     * @param fromRightToLeft
-     */
-    public void translateX(View target, Boolean fromRightToLeft) {
-        final Animation animation;
-        if (fromRightToLeft){
-            animation = new TranslateAnimation((unselectedBottomNavItemWidth-30),0,0,0);
-        } else {
-            animation = new TranslateAnimation(-(unselectedBottomNavItemWidth-30),0,0,0);
-        }
-
-        animation.setDuration(TRANSLATE_ANIMATION_DURATION_MS);
-        target.setAnimation(animation);
-
-    }
-
-
-    /**
-     *
      * @param viewTarget
      * @param startRevealRadius
      * @return
      */
-    private Animator roundedSelectorRevealAnimation (View viewTarget, int startRevealRadius,
+    private Animator roundedSelectorRevealAnimation (View viewTarget,
+                                                     int startRevealRadius,
                                                      final int pos,
                                                      final int width, final int height,
                                                      final int left, final int right){
