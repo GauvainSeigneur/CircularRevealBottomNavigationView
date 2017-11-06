@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean iscolorRevealBackground;
     private static final long ACTIVE_ANIMATION_DURATION_MS = 115L;
     private static final long REVEAL_ANIMATION_DURATION_MS = 445L;
-    private static final long TRANSLATE_ANIMATION_DURATION_MS = 227L;
+    private static final long TRANSLATE_ANIMATION_DURATION_MS = 300L;
     //int for menu item dimension
     private int[] mTempChildWidths;
     private int mSelectedItemPosition = 0;
@@ -258,6 +258,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         animation.setDuration(TRANSLATE_ANIMATION_DURATION_MS);
+        //animation.setInterpolator(new LinearOutSlowInInterpolator());
         target.setAnimation(animation);
 
     }
