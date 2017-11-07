@@ -274,14 +274,14 @@ public class MainActivity extends AppCompatActivity {
         if (currentItemSelected != previousItemSelected) {
             if (iscolorRevealBackground) {
                 //animation
-                colorCircularRevealAnimator(revealFront, inactiveWidth-20, pos); //targetWidth
+                colorCircularRevealAnimator(revealFront, inactiveWidth-20, pos); 
             } else {
                 //second animation
                 roundedSelectorRevealAnimation(
                         selectorRound,
-                        inactiveWidth-20, //targetWidth
+                        inactiveWidth-20, //targetWidth + 20 to fit ripple effect
                         pos, //position for circular reval start
-                        activeWidth+20,
+                        activeWidth+20, //targetWidth + 20 to fit ripple effect
                         mBottomNavigationView.getHeight()*3, //height
                         (inactiveWidth*pos)-10, //margin left
                         0 //margin right
