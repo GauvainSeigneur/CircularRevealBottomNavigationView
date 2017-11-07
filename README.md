@@ -17,7 +17,7 @@ Circular reveal animation that change background color of BottomNavigationView l
 
 ## Screenshot
 
-| Google Example | Mine : Multiple Reveal Color |  Mine : One Reveal Color |
+| Google Example | Mine : Multiple Reveal Color |  Mine : Selector Circular Reveal|
 | ------ | ------ |------ |
 | ![Google Material Design Example](/art/bottom_nav_material_spec_reveal.gif "Google Material Design Example") | ![Mine : Multiple Reveal Color](/art/bottom_nav_reveal_selector.gif "Mine : Multiple Reveal Color") | ![Mine : selector circular reveal](/art/bottom_nav_multiple_reveal_color.gif "Mine : Reveal Selector") |
 
